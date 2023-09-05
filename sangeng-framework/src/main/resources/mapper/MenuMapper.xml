@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sangeng.mapper.MenuMapper">
+
+    <select id="selectPermsByUserId" resultType="java.lang.String">
+        SELECT DISTINCT m.perms
+        from `sys_user_role` u
+                 LEFT JOIN `sys_role_menu` r on r.role_id =  u.role_id
+                 LEFT JOIN `sys_menu` m on m.id = r.menu_id
+        where u.user_id = #{userId}
+          AND m.menu_type in ('C','F')
+          AND m.`status` = 0
+          AND m.del_flag = 0
+    </select>
+    <select id="selectAllRouterMenu" resultType="com.sangeng.domain.entity.Menu">
+        SELECT
+            DISTINCT m.id, m.parent_id, m.menu_name, m.path, m.component, m.visible, m.status, IFNULL(m.perms,'') AS perms, m.is_frame,  m.menu_type, m.icon, m.order_num, m.create_time
+        from `sys_menu` m
+        where  m.menu_type in ('C','M')
+          AND m.`status` = 0
+          AND m.del_flag = 0
+        order by
+        m.parent_id,m.order_num
+    </select>
+    <select id="selectRouterMenuTreeByUserId" resultType="com.sangeng.domain.entity.Menu">
+        SELECT
+            DISTINCT m.id, m.parent_id, m.menu_name, m.path, m.component, m.visible, m.status, IFNULL(m.perms,'') AS perms, m.is_frame,  m.menu_type, m.icon, m.order_num, m.create_time
+        from `sys_user_role` u
+                 LEFT JOIN `sys_role_menu` r on r.role_id =  u.role_id
+                 LEFT JOIN `sys_menu` m on m.id = r.menu_id
+        where   u.user_id = #{userId}
+          AND m.menu_type in ('C','M')
+          AND m.`status` = 0
+          AND m.del_flag = 0
+        order by
+            m.parent_id,m.order_num
+    </select>
+    <select id="treeSelect" resultType="com.sangeng.domain.entity.Menu">
+        SELECT
+            DISTINCT m.id, m.parent_id, m.menu_name AS label, m.status, m.order_num
+        from `sys_menu` m
+        where  m.`status` = 0
+          AND m.del_flag = 0
+        order by
+            m.parent_id,m.order_num
+    </select>
+</mapper>
